@@ -1,0 +1,31 @@
+using MediatR;
+using Polls.Application.Abstractions.Authentication;
+using Polls.Application.UserUseCases.Models;
+using Polls.Domain.ProfileAggregate.Repositories;
+using Polls.Domain.UserAggregate.Repositories;
+using Polls.Domain.UserAggregate.ValueObjects;
+
+namespace Polls.Application.UserUseCases.Authentication.Commands;
+
+public sealed record LoginUserCommand(string Email, string Password) : IRequest<UserDto>;
+
+public sealed class LoginUserCommandHandler(
+    IUserRepository userRepository,
+    IProfileRepository profileRepository,
+    IJwtTokenGenerator jwtTokenGenerator
+) : IRequestHandler<LoginUserCommand, UserDto>
+{
+    public async Task<UserDto> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+    {
+        var email = new Email(request.Email);
+        var user = await userRepository.GetByEmailAsync(email);
+
+        if (user is null || !user.Password.Verify(request.Password))
+            throw new ApplicationException("Invalid email or password");
+
+        var token = jwtTokenGenerator.GenerateToken(user);
+        var username = await profileRepository.GetUsernameById(user.Id);
+
+        return new UserDto(user.Id.Value, user.Email.Value, username.Value, token);
+    }
+}
