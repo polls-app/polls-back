@@ -7,7 +7,7 @@ using Polls.Domain.Verification.Repositories;
 
 namespace Polls.Application.UserUseCases.Authentication.Commands;
 
-public sealed record ResendTokenCommand(string Email) : IRequest;
+public sealed record ResendTokenCommand(Email Email) : IRequest;
 
 public sealed class ResendTokenCommandHandler(
     IUserRepository userRepository,
@@ -17,14 +17,12 @@ public sealed class ResendTokenCommandHandler(
 {
     public async Task Handle(ResendTokenCommand request, CancellationToken cancellationToken)
     {
-        var email = new Email(request.Email);
-
-        if (!await userRepository.IsEmailTakenAsync(email))
+        if (!await userRepository.IsEmailTakenAsync(request.Email))
             throw new ApplicationException("User not found");
 
         var token = VerificationToken.New();
 
-        await tokenStore.Store(email, token);
-        await sender.SendAsync(token, email);
+        await tokenStore.Store(request.Email, token);
+        await sender.SendAsync(token, request.Email);
     }
 }

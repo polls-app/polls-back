@@ -5,26 +5,26 @@ namespace Polls.Api.Extractors;
 
 public interface IUserExtractor
 {
-    Guid GetId();
+    UserId GetId();
 
-    string GetEmail();
+    Email GetEmail();
 }
 
 public sealed class UserExtractor(IHttpContextAccessor httpContextAccessor) : IUserExtractor
 {
-    public Guid GetId()
+    public UserId GetId()
     {
         var userId = httpContextAccessor.HttpContext?.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value
             ?? throw new ApplicationException("No userId claim found");
 
-        return new Guid(userId);
+        return new UserId(new Guid(userId));
     }
 
-    public string GetEmail()
+    public Email GetEmail()
     {
         var email = httpContextAccessor.HttpContext?.User.Claims.First(c => c.Type == ClaimTypes.Email).Value
             ?? throw new ApplicationException("No email claim found");
 
-        return email;
+        return new Email(email);
     }
 }

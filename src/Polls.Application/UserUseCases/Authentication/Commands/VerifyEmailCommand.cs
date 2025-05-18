@@ -5,7 +5,7 @@ using Polls.Domain.Verification.Repositories;
 
 namespace Polls.Application.UserUseCases.Authentication.Commands;
 
-public sealed record VerifyEmailCommand(string Token, string Email) : IRequest;
+public sealed record VerifyEmailCommand(string Token, Email Email) : IRequest;
 
 public sealed class VerifyEmailCommandHandler(
     IUserRepository userRepository,
@@ -14,8 +14,7 @@ public sealed class VerifyEmailCommandHandler(
 {
     public async Task Handle(VerifyEmailCommand request, CancellationToken cancellationToken)
     {
-        var userEmail = new Email(request.Email);
-        var token = await tokenStore.Get(userEmail);
+        var token = await tokenStore.Get(request.Email);
 
         if (token is null)
             throw new ApplicationException("Token not found");
@@ -23,7 +22,7 @@ public sealed class VerifyEmailCommandHandler(
         if (!token.IsVerify(request.Token))
             throw new ApplicationException("Invalid token");
 
-        var user = await userRepository.GetByEmailAsync(userEmail);
+        var user = await userRepository.GetByEmailAsync(request.Email);
         if (user is null)
             throw new ApplicationException("User not found");
 
