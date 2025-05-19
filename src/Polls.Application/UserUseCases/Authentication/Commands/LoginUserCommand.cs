@@ -7,7 +7,7 @@ using Polls.Domain.UserAggregate.ValueObjects;
 
 namespace Polls.Application.UserUseCases.Authentication.Commands;
 
-public sealed record LoginUserCommand(string Email, string Password) : IRequest<UserDto>;
+public sealed record LoginUserCommand(Email Email, string Password) : IRequest<UserDto>;
 
 public sealed class LoginUserCommandHandler(
     IUserRepository userRepository,
@@ -17,8 +17,7 @@ public sealed class LoginUserCommandHandler(
 {
     public async Task<UserDto> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
-        var email = new Email(request.Email);
-        var user = await userRepository.GetByEmailAsync(email);
+        var user = await userRepository.GetByEmailAsync(request.Email);
 
         if (user is null || !user.Password.Verify(request.Password))
             throw new ApplicationException("Invalid email or password");

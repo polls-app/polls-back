@@ -6,7 +6,7 @@ public sealed class VerificationToken
 
     public DateTime ExpiresAt { get; private set; } = DateTime.UtcNow.AddMinutes(10);
 
-    private VerificationToken(string token)
+    public VerificationToken(string token)
     {
         if (token.Length != 8 || !token.All(char.IsDigit))
             throw new ArgumentException("Token must be an 8-digit numeric string.");
@@ -14,7 +14,15 @@ public sealed class VerificationToken
         Token = token;
     }
 
-    public bool IsVerify(string token) => token == Token;
+    public bool IsVerify(VerificationToken token) => IsVerify(token.Token);
+
+    public bool IsVerify(string token)
+    {
+        if (ExpiresAt < DateTime.UtcNow)
+            throw new ApplicationException("Token has expired");
+
+        return token == Token;
+    }
 
     public void ChangeExpiresAt(uint minutes) => ExpiresAt = DateTime.UtcNow.AddMinutes(minutes);
 

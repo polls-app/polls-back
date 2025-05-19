@@ -15,4 +15,12 @@ public sealed class Mail(string subject, string body, bool isHtml = false)
 
         return new Mail(subject, body, true);
     }
+
+    public static Mail CreateChangePasswordMail(VerificationToken token)
+    {
+        const string subject = "Change your password";
+        var body = $"Code: {token.Token}<br/>Expires through {(token.ExpiresAt - DateTime.UtcNow).Minutes} minutes";
+
+        return new Mail(subject, body, true);
+    }
 }

@@ -6,14 +6,18 @@ using Polls.Domain.Verification.Repositories;
 
 namespace Polls.Application.UserUseCases.Authentication.Commands;
 
-public sealed record VerifyEmailCommand(VerificationToken Token, Email Email) : IRequest;
+public sealed record ChangePasswordCommand(
+    Email Email,
+    Password Password,
+    VerificationToken Token
+) : IRequest;
 
-public sealed class VerifyEmailCommandHandler(
+public sealed class ChangePasswordCommandHandler(
     IUserRepository userRepository,
     IVerificationTokenRepository tokenStore
-) : IRequestHandler<VerifyEmailCommand>
+) : IRequestHandler<ChangePasswordCommand>
 {
-    public async Task Handle(VerifyEmailCommand request, CancellationToken cancellationToken)
+    public async Task Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
     {
         var token = await tokenStore.Get(request.Email);
 
@@ -24,10 +28,11 @@ public sealed class VerifyEmailCommandHandler(
             throw new ApplicationException("Invalid token");
 
         var user = await userRepository.GetByEmailAsync(request.Email);
+
         if (user is null)
             throw new ApplicationException("User not found");
 
-        user.Email.Verify();
+        user.ChangePassword(request.Password);
         await userRepository.UpdateAsync(user);
     }
 }
