@@ -15,7 +15,7 @@ namespace Polls.Api.Controllers.v1.UserRestApi;
 public class AuthenticationController(ISender mediator, IUserExtractor userExtractor) : ControllerBase
 {
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterRequest request)
+    public async Task<ActionResult<AuthResponse>> Register(RegisterRequest request)
     {
         var command = new RegisterUserCommand(request.Email, request.Password);
 
@@ -25,7 +25,7 @@ public class AuthenticationController(ISender mediator, IUserExtractor userExtra
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginRequest request)
+    public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
     {
         var command = new LoginUserCommand(new Email(request.Email), request.Password);
 
@@ -36,14 +36,14 @@ public class AuthenticationController(ISender mediator, IUserExtractor userExtra
 
     [Authorize]
     [HttpPatch("confirm-email")]
-    public async Task<IActionResult> ConfirmEmail(ConfirmEmailRequest request)
+    public async Task<ActionResult<AuthResponse>> ConfirmEmail(ConfirmEmailRequest request)
     {
         var email = userExtractor.GetEmail();
 
         var command = new VerifyEmailCommand(new VerificationToken(request.Token), email);
-        await mediator.Send(command);
+        var result = await mediator.Send(command);
 
-        return Ok();
+        return Ok(new AuthResponse(result.Id, result.Email, result.Username, result.Token));
     }
 
     [Authorize]

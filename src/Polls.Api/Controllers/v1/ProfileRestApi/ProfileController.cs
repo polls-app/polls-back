@@ -16,7 +16,7 @@ public class ProfileController(ISender mediator, IUserExtractor userExtractor) :
 {
     [HttpGet]
     [Authorize(Policy.EmailVerified)]
-    public async Task<IActionResult> GetProfile()
+    public async Task<ActionResult<ProfileResponse>> GetProfile()
     {
         var userId = userExtractor.GetId();
 
