@@ -2,13 +2,16 @@ namespace Polls.Domain.Verification;
 
 public sealed class VerificationToken
 {
+    private const int TokenLength = 6;
+    private const int TokenLiveMinutes = 10;
+
     public string Token { get; }
 
-    public DateTime ExpiresAt { get; private set; } = DateTime.UtcNow.AddMinutes(10);
+    public DateTime ExpiresAt { get; private set; } = DateTime.UtcNow.AddMinutes(TokenLiveMinutes);
 
     public VerificationToken(string token)
     {
-        if (token.Length != 8 || !token.All(char.IsDigit))
+        if (token.Length != TokenLength || !token.All(char.IsDigit))
             throw new ArgumentException("Token must be an 8-digit numeric string.");
 
         Token = token;
@@ -35,7 +38,7 @@ public sealed class VerificationToken
     private static string Generate8DigitToken()
     {
         var random = new Random();
-        var digits = new char[8].AsSpan();
+        var digits = new char[TokenLength].AsSpan();
 
         for (var i = 0; i < digits.Length; i++)
         {

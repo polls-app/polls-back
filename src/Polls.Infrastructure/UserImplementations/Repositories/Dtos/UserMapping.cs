@@ -2,7 +2,7 @@ using Polls.Domain.UserAggregate.Enums;
 
 namespace Polls.Infrastructure.UserImplementations.Repositories.Dtos;
 
-public sealed class UserMapping
+internal sealed class UserMapping
 {
     public Guid Id { get; init; }
 

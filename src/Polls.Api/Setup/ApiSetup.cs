@@ -24,6 +24,7 @@ public static class ApiSetup
         services.AddAuthorization(configuration);
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(RegisterUserCommand).Assembly));
         services.AddHttpFeatures(configuration);
+        services.AddCors(configuration);
 
         return services;
     }
@@ -99,5 +100,18 @@ public static class ApiSetup
     {
         services.AddHttpContextAccessor();
         services.AddScoped<IUserExtractor, UserExtractor>();
+    }
+
+    private static void AddCors(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAll", policy =>
+            {
+                policy.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
+        });
     }
 }

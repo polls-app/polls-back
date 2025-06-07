@@ -13,6 +13,10 @@ public sealed class Profile : AggregateRoot
         Fullname fullname,
         string description,
         Avatar avatar,
+        uint followerCount,
+        uint followingCount,
+        uint postCount,
+        uint contributionCount,
         UserId userId)
     {
         Id = profileId;
@@ -20,6 +24,10 @@ public sealed class Profile : AggregateRoot
         Fullname = fullname;
         Description = description;
         Avatar = avatar;
+        FollowerCount = followerCount;
+        FollowingCount = followingCount;
+        PostCount = postCount;
+        ContributionCount = contributionCount;
         UserId = userId;
     }
 
@@ -32,6 +40,12 @@ public sealed class Profile : AggregateRoot
     public string Description { get; private set; }
 
     public Avatar Avatar { get; private set; }
+
+    public uint FollowerCount { get; private set; }
+
+    public uint FollowingCount { get; private set; }
+
+    public uint PostCount { get; private set; }
 
     public uint ContributionCount { get; private set; }
 
@@ -66,7 +80,17 @@ public sealed class Profile : AggregateRoot
         string description,
         Avatar avatar)
     {
-        var profile = new Profile(ProfileId.New(), username, fullname, description, avatar, userId);
+        var profile = new Profile(
+            ProfileId.New(),
+            username,
+            fullname,
+            description,
+            avatar,
+            followerCount: 0,
+            followingCount: 0,
+            postCount: 0,
+            contributionCount: 0,
+            userId);
 
         profile.AddEvent(new ProfileCreated(profile.Id, profile.Username, profile.UserId));
         return profile;

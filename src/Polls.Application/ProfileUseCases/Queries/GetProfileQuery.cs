@@ -24,6 +24,9 @@ public sealed class GetProfileQueryHandler(
             profile.Fullname.Lastname.Value,
             profile.Description,
             profile.Avatar.Path,
+            profile.FollowerCount,
+            profile.FollowingCount,
+            profile.PostCount,
             profile.ContributionCount);
     }
 }

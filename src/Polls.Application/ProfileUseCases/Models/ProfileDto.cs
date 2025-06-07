@@ -6,5 +6,8 @@ public record ProfileDto(
     string Lastname,
     string Description,
     string AvatarPath,
+    uint FollowerCount,
+    uint FollowingCount,
+    uint PostCount,
     uint ContributionCount
 );

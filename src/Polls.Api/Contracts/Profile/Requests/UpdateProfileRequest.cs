@@ -1,8 +1,8 @@
 namespace Polls.Api.Contracts.Profile.Requests;
 
 public sealed record UpdateProfileRequest(
-    string Username,
-    string Firstname,
-    string Lastname,
-    string Description
+    string? Username = null,
+    string? Firstname = null,
+    string? Lastname = null,
+    string? Description = null
 );

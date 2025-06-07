@@ -12,15 +12,19 @@ public class ProfileRepository(DapperContext context) : IProfileRepository
 {
     private const string GetProfileByIdSql = """
                                              SELECT
-                                                 id,
-                                                 username,
-                                                 first_name AS FirstName,
-                                                 last_name AS LastName,
-                                                 description,
-                                                 avatar_path AS AvatarPath,
-                                                 contribution_count AS ContributionCount,
-                                                 user_id AS UserId
-                                             FROM profiles WHERE user_id = @UserId
+                                                 p.id AS Id,
+                                                 p.username AS Username,
+                                                 p.first_name AS Firstname,
+                                                 p.last_name AS Lastname,
+                                                 p.description AS Description,
+                                                 p.avatar_path AS AvatarPath,
+                                                 p.contribution_count AS ContributionCount,
+                                                 p.user_id AS UserId,
+                                                 (SELECT COUNT(*) FROM followings f WHERE f.user_id = p.user_id) AS FollowerCount,
+                                                 (SELECT COUNT(*) FROM followings f WHERE f.follower_id = p.user_id) AS FollowingCount,
+                                                 (SELECT COUNT(*) FROM polls po WHERE po.user_id = p.user_id) AS PostCount
+                                             FROM profiles p
+                                             WHERE p.user_id = @UserId;
                                              """;
 
     private const string GetUsernameByIdSql = "SELECT username FROM profiles WHERE user_id = @UserId";
@@ -54,6 +58,10 @@ public class ProfileRepository(DapperContext context) : IProfileRepository
                 new Fullname(new Name(profileMapping.Firstname), new Name(profileMapping.Lastname)),
                 profileMapping.Description,
                 new Avatar(profileMapping.AvatarPath),
+                profileMapping.FollowerCount,
+                profileMapping.FollowingCount,
+                profileMapping.PostCount,
+                profileMapping.ContributionCount,
                 new UserId(profileMapping.UserId));
     }
 

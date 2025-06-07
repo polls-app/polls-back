@@ -1,6 +1,6 @@
 namespace Polls.Infrastructure.ProfileImplementations.Dtos;
 
-public class ProfileMapping
+internal class ProfileMapping
 {
     public Guid Id { get; init; }
 
@@ -14,7 +14,13 @@ public class ProfileMapping
 
     public required string AvatarPath { get; init; }
 
-    public required string ContributionCount { get; init; }
+    public uint FollowerCount { get; init; }
+
+    public uint FollowingCount { get; init; }
+
+    public uint PostCount { get; init; }
+
+    public uint ContributionCount { get; init; }
 
     public Guid UserId { get; init; }
 }

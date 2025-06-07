@@ -23,7 +23,7 @@ public class ProfileController(ISender mediator, IUserExtractor userExtractor) :
         var query = new GetProfileQuery(userId);
         var result = await mediator.Send(query);
 
-        return Ok(new ProfileResponse(result.Username, result.Firstname, result.Lastname, result.Description, result.AvatarPath, result.ContributionCount));
+        return Ok(ProfileResponse.From(result));
     }
 
     [HttpPatch]
