@@ -1,4 +1,5 @@
 using MediatR;
+using Polls.Domain.Errors;
 using Polls.Domain.ProfileAggregate.Repositories;
 using Polls.Domain.ProfileAggregate.ValueObjects;
 using Polls.Domain.UserAggregate.ValueObjects;
@@ -21,7 +22,7 @@ public sealed class UpdateProfileCommandHandler(
     {
         var profile = await profileRepository.GetProfileByUserId(request.UserId);
         if (profile is null)
-            throw new ApplicationException("Profile not found");
+            throw new NotFoundException();
 
         var username = request.Username is null
             ? profile.Username
@@ -32,7 +33,7 @@ public sealed class UpdateProfileCommandHandler(
             : new Fullname(new Name(request.Firstname), new Name(request.Lastname));
 
         if (await profileRepository.IsUsernameTaken(username))
-            throw new ApplicationException("Username already taken");
+            throw new ConflictException();
 
         profile.Update(username, fullname, request.Description ?? profile.Description);
         await profileRepository.UpdateProfile(profile);

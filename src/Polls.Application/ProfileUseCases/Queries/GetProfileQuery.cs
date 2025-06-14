@@ -1,5 +1,6 @@
 using MediatR;
 using Polls.Application.ProfileUseCases.Models;
+using Polls.Domain.Errors;
 using Polls.Domain.ProfileAggregate.Repositories;
 using Polls.Domain.UserAggregate.ValueObjects;
 
@@ -16,7 +17,7 @@ public sealed class GetProfileQueryHandler(
         var profile = await profileRepository.GetProfileByUserId(request.UserId);
 
         if (profile is null)
-            throw new ApplicationException("Profile not found");
+            throw new NotFoundException();
 
         return new ProfileDto(
             profile.Username.Value,

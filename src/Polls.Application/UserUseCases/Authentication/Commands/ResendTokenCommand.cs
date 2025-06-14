@@ -1,5 +1,6 @@
 using MediatR;
 using Polls.Application.Abstractions.Senders;
+using Polls.Domain.Errors;
 using Polls.Domain.UserAggregate.Repositories;
 using Polls.Domain.UserAggregate.ValueObjects;
 using Polls.Domain.Verification;
@@ -18,7 +19,7 @@ public sealed class ResendTokenCommandHandler(
     public async Task Handle(ResendTokenCommand request, CancellationToken cancellationToken)
     {
         if (!await userRepository.IsEmailTakenAsync(request.Email))
-            throw new ApplicationException("User not found");
+            throw new NotFoundException("User not found.");
 
         var token = VerificationToken.New();
 

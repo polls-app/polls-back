@@ -1,3 +1,4 @@
+using Polls.Api.Middlewares;
 using Polls.Api.Setup;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +27,7 @@ if (app.Environment.IsDevelopment())
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
+    app.UseGlobalExceptionHandler();
 
     app.Run();
 }

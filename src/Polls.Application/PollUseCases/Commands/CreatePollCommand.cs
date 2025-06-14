@@ -1,4 +1,5 @@
 using MediatR;
+using Polls.Domain.Errors;
 using Polls.Domain.PollAggregate;
 using Polls.Domain.PollAggregate.Entities;
 using Polls.Domain.PollAggregate.Repositories;
@@ -30,7 +31,7 @@ public sealed class CreatePollCommandHandler(
     {
         var category = await categoryRepository.GetById(request.CategoryId);
         if (category is null)
-            throw new ApplicationException("Category not found");
+            throw new NotFoundException("Category not found");
 
         var hashTags = await GetHashtags(request.HashtagIds);
         var options = await GetOptions(request.OptionIds);

@@ -1,6 +1,7 @@
 using MediatR;
 using Polls.Application.Abstractions.Authentication;
 using Polls.Application.UserUseCases.Models;
+using Polls.Domain.Errors;
 using Polls.Domain.ProfileAggregate.Repositories;
 using Polls.Domain.UserAggregate.Repositories;
 using Polls.Domain.UserAggregate.ValueObjects;
@@ -20,7 +21,7 @@ public sealed class LoginUserCommandHandler(
         var user = await userRepository.GetByEmailAsync(request.Email);
 
         if (user is null || !user.Password.Verify(request.Password))
-            throw new ApplicationException("Invalid email or password");
+            throw new BadRequestException("Invalid email or password.");
 
         var token = jwtTokenGenerator.GenerateToken(user);
         var username = await profileRepository.GetUsernameById(user.Id);

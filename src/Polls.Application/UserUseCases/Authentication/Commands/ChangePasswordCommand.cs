@@ -1,4 +1,5 @@
 using MediatR;
+using Polls.Domain.Errors;
 using Polls.Domain.UserAggregate.Repositories;
 using Polls.Domain.UserAggregate.ValueObjects;
 using Polls.Domain.Verification;
@@ -22,15 +23,15 @@ public sealed class ChangePasswordCommandHandler(
         var token = await tokenStore.Get(request.Email);
 
         if (token is null)
-            throw new ApplicationException("Token not found");
+            throw new NotFoundException();
 
         if (!token.IsVerify(request.Token))
-            throw new ApplicationException("Invalid token");
+            throw new BadRequestException();
 
         var user = await userRepository.GetByEmailAsync(request.Email);
 
         if (user is null)
-            throw new ApplicationException("User not found");
+            throw new NotFoundException();
 
         user.ChangePassword(request.Password);
         await userRepository.UpdateAsync(user);

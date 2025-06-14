@@ -1,6 +1,7 @@
 using MediatR;
 using Polls.Application.Abstractions.Authentication;
 using Polls.Application.UserUseCases.Models;
+using Polls.Domain.Errors;
 using Polls.Domain.ProfileAggregate.Repositories;
 using Polls.Domain.UserAggregate.Repositories;
 using Polls.Domain.UserAggregate.ValueObjects;
@@ -23,14 +24,14 @@ public sealed class VerifyEmailCommandHandler(
         var token = await tokenStore.Get(request.Email);
 
         if (token is null)
-            throw new ApplicationException("Token not found");
+            throw new NotFoundException("Token not found.");
 
         if (!token.IsVerify(request.Token))
-            throw new ApplicationException("Invalid token");
+            throw new BadRequestException("Invalid token.");
 
         var user = await userRepository.GetByEmailAsync(request.Email);
         if (user is null)
-            throw new ApplicationException("User not found");
+            throw new NotFoundException("User not found.");
 
         user.Email.Verify();
         await userRepository.UpdateAsync(user);

@@ -1,4 +1,5 @@
 using MediatR;
+using Polls.Domain.Errors;
 using Polls.Domain.ProfileAggregate.Repositories;
 using Polls.Domain.ProfileAggregate.ValueObjects;
 using Polls.Domain.UserAggregate.ValueObjects;
@@ -20,7 +21,7 @@ public sealed class UpdateAvatarCommandHandler(
         var profile = await profileRepository.GetProfileByUserId(request.UserId);
 
         if (profile is null)
-            throw new ApplicationException("Profile not found");
+            throw new NotFoundException();
 
         profile.ChangeAvatar(avatar);
         await profileRepository.UpdateProfile(profile);

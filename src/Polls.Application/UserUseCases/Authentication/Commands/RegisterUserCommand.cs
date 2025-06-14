@@ -2,6 +2,7 @@ using MediatR;
 using Polls.Application.Abstractions.Authentication;
 using Polls.Application.UserUseCases.Models;
 using Polls.Domain.Base.Events;
+using Polls.Domain.Errors;
 using Polls.Domain.UserAggregate.Repositories;
 using Polls.Domain.UserAggregate.Services;
 using Polls.Domain.UserAggregate.ValueObjects;
@@ -23,7 +24,7 @@ public sealed class RegisterUserCommandHandler(
         var password = Password.CreateHashed(request.Password);
 
         if (await userRepository.IsEmailTakenAsync(email))
-            throw new ApplicationException("Email is already taken");
+            throw new ConflictException("Email is already taken.");
 
         var (user, profile) = registerUserService.Register(email, password);
         await userRepository.AddAsync(user, profile);
